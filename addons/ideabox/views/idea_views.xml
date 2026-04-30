@@ -1,0 +1,280 @@
+<odoo>
+
+    <!-- =======================
+        TREE VIEW
+    ======================== -->
+    <record id="view_idea_tree" model="ir.ui.view">
+        <field name="name">idea.tree</field>
+        <field name="model">ideabox.idea</field>
+        <field name="arch" type="xml">
+            <tree string="Idées">
+                <field name="name"/>
+                <field name="potential_name"/>
+                <field name="initiator_id"/>
+                <field name="analyst_id"/>
+                <field name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'review'"
+                    decoration-success="state == 'approved' or state == 'project'"
+                    decoration-danger="state == 'rejected'"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!-- =======================
+        KANBAN VIEW
+    ======================== -->
+    <record id="view_idea_kanban" model="ir.ui.view">
+        <field name="name">idea.kanban</field>
+        <field name="model">ideabox.idea</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+
+                <field name="name"/>
+                <field name="potential_name"/>
+                <field name="state"/>
+                <field name="problem"/>
+                <field name="initiator_id"/>
+                <field name="analyst_id"/>
+                <field name="kanban_state_color"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record p-3 rounded"
+                            style="min-height:120px;">
+
+                            <!-- Titre + badge coloré -->
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong><field name="name"/></strong>
+                                <!-- Badge coloré dynamiquement via kanban_state_color -->
+                                <span t-attf-style="
+                                        background-color: #{record.kanban_state_color.value};
+                                        color: #fff;
+                                        padding: 2px 8px;
+                                        border-radius: 4px;
+                                        font-size: 11px;
+                                        white-space: nowrap;"
+                                    t-esc="record.state.value"/>
+                            </div>
+
+                            <div class="text-muted mt-1">
+                                <field name="potential_name"/>
+                            </div>
+
+                            <div class="text-muted mt-2"
+                                style="font-size:12px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+                                <field name="problem"/>
+                            </div>
+
+                            <!-- Initiateur & Analyste -->
+                            <div class="d-flex align-items-center gap-2 mt-2" style="font-size:12px;">
+                                <t t-if="record.initiator_id.value">
+                                    <span class="text-muted">
+                                        🙋 <t t-esc="record.initiator_id.value"/>
+                                    </span>
+                                </t>
+                                <t t-if="record.analyst_id.value">
+                                    <span class="text-muted">
+                                        🔍 <t t-esc="record.analyst_id.value"/>
+                                    </span>
+                                </t>
+                            </div>
+
+                        </div>
+                    </t>
+                </templates>
+
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- =======================
+        FORM VIEW
+    ======================== -->
+    <record id="view_idea_form" model="ir.ui.view">
+        <field name="name">idea.form</field>
+        <field name="model">ideabox.idea</field>
+        <field name="arch" type="xml">
+
+            <form string="Idée">
+
+                <!-- HEADER -->
+                <header>
+
+                    <button name="action_submit"
+                            type="object"
+                            string="Soumettre"
+                            class="btn-secondary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_review"
+                            type="object"
+                            string="Analyser"
+                            class="btn-info"
+                            invisible="state != 'submitted'"/>
+
+                    <button name="action_approve"
+                            type="object"
+                            string="Valider"
+                            class="btn-success"
+                            invisible="state != 'review'"/>
+
+                    <button name="action_reject"
+                            type="object"
+                            string="Rejeter"
+                            class="btn-danger"
+                            invisible="state not in ('submitted','review')"/>
+
+                    <button name="action_convert_to_project"
+                            type="object"
+                            string="Transformer en projet"
+                            class="btn-primary"
+                            invisible="state != 'approved'"/>
+
+                    <field name="user_id" widget="many2one_avatar_user"/>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,submitted,review,approved,project"/>
+
+                </header>
+
+                <sheet>
+
+                    <!-- TITRE -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Décris ton idée clairement..."/>
+                        </h1>
+                        <h3 class="text-muted">
+                            <field name="potential_name" placeholder="Nom potentiel du projet"/>
+                        </h3>
+                    </div>
+
+                    <!-- INITIATEUR & ANALYSTE -->
+                    <group col="2">
+                        <field name="initiator_id"
+                               string="Initiateur de l'idée"
+                               widget="many2one_avatar_employee"/>
+                        <field name="analyst_id"
+                               string="Analyste assigné"
+                               widget="many2one_avatar_employee"
+                               invisible="state not in ('review','approved','rejected','project')"/>
+                    </group>
+
+                    <!-- DESCRIPTION -->
+                    <group col="1">
+                        <label for="description"/>
+                        <field name="description" widget="text" nolabel="1"
+                               style="min-height:120px;"/>
+                    </group>
+
+                    <!-- PROJET LIÉ -->
+                    <div class="alert alert-success mt-2"
+                        invisible="not project_id">
+                        Projet lié :
+                        <field name="project_id" readonly="1"/>
+                    </div>
+
+                    <!-- NOTEBOOK -->
+                    <notebook>
+
+                        <page string="Problème">
+                            <group col="1">
+                                <label for="problem"/>
+                                <field name="problem" widget="text" nolabel="1"
+                                    style="min-height:120px;"/>
+                            </group>
+                            <group col="1">
+                                <label for="target_users"/>
+                                <field name="target_users" widget="text" nolabel="1"
+                                    style="min-height:100px;"/>
+                            </group>
+                        </page>
+
+                        <page string="Solution">
+                            <group col="1">
+                                <label for="solution"/>
+                                <field name="solution" widget="text" nolabel="1"
+                                    style="min-height:120px;"/>
+                            </group>
+                            <group col="1">
+                                <label for="how_it_works"/>
+                                <field name="how_it_works" widget="text" nolabel="1"
+                                    style="min-height:120px;"/>
+                            </group>
+                        </page>
+
+                        <page string="Analyse">
+                            <group col="1">
+                                <label for="features"/>
+                                <field name="features" widget="text" nolabel="1"
+                                    style="min-height:120px;"/>
+                            </group>
+                            <group col="1">
+                                <label for="feasibility"/>
+                                <field name="feasibility" widget="text" nolabel="1"
+                                    style="min-height:100px;"/>
+                            </group>
+                            <group col="1">
+                                <label for="resources"/>
+                                <field name="resources" widget="text" nolabel="1"
+                                    style="min-height:100px;"/>
+                            </group>
+                        </page>
+
+                        <page string="Valeur &amp; Risques">
+                            <group col="1">
+                                <label for="value_proposition"/>
+                                <field name="value_proposition" widget="text" nolabel="1"
+                                    style="min-height:120px;"/>
+                            </group>
+                            <group col="1">
+                                <label for="risks"/>
+                                <field name="risks" widget="text" nolabel="1"
+                                    style="min-height:100px;"/>
+                            </group>
+                            <group col="1">
+                                <label for="evolution"/>
+                                <field name="evolution" widget="text" nolabel="1"
+                                    style="min-height:100px;"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <!-- CHATTER -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+
+    <!-- =======================
+        ACTION
+    ======================== -->
+    <record id="action_idea" model="ir.actions.act_window">
+        <field name="name">Ideabox</field>
+        <field name="res_model">ideabox.idea</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+
+    <!-- =======================
+        MENU
+    ======================== -->
+    <menuitem id="menu_ideabox_root" name="Ideabox"/>
+    <menuitem id="menu_ideabox_ideas"
+            name="Idées"
+            parent="menu_ideabox_root"
+            action="action_idea"/>
+
+</odoo>
