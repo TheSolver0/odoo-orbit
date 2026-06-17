@@ -8,15 +8,17 @@
             <search>
                 <field name="name"/>
                 <field name="client_id"/>
+                <field name="project_name"/>
                 <field name="document_type_id"/>
                 <field name="objet"/>
-                <field name="project_name"/>
                 <filter string="Brouillons" name="filter_draft" domain="[('statut','=','draft')]"/>
                 <filter string="Transmis" name="filter_sent" domain="[('statut','=','sent')]"/>
                 <filter string="Validés" name="filter_validated" domain="[('statut','=','validated')]"/>
-                <group expand="0" string="Grouper par" name="group_by_options">
+                <filter string="Annulés" name="filter_cancelled" domain="[('statut','=','cancelled')]"/>
+                <group expand="0" string="Grouper par" name="group_by">
                     <filter string="Client" name="groupby_client" context="{'group_by':'client_id'}"/>
                     <filter string="Type" name="groupby_type" context="{'group_by':'document_type_id'}"/>
+                    <filter string="Projet" name="groupby_project" context="{'group_by':'project_name'}"/>
                     <filter string="Statut" name="groupby_statut" context="{'group_by':'statut'}"/>
                 </group>
             </search>
@@ -33,6 +35,7 @@
                 <field name="client_id"/>
                 <field name="objet"/>
                 <field name="project_name"/>
+                <field name="date_creation"/>
                 <field name="statut"/>
             </tree>
         </field>
@@ -46,13 +49,13 @@
                 <header>
                     <button name="action_validate" type="object" string="Valider"
                         class="btn-success"
-                        attrs="{'invisible': [('statut', '!=', 'draft')]}"/>
+                        invisible="statut != 'draft'"/>
                     <button name="action_mark_as_sent" type="object" string="Transmettre"
                         class="btn-primary"
-                        attrs="{'invisible': [('statut', '!=', 'validated')]}"/>
+                        invisible="statut != 'validated'"/>
                     <button name="action_cancel" type="object" string="Annuler"
                         class="btn-danger"
-                        attrs="{'invisible': [('statut', '=', 'cancelled')]}"/>
+                        invisible="statut == 'cancelled'"/>
                     <field name="statut" widget="statusbar"
                         statusbar_visible="draft,validated,sent,cancelled"/>
                 </header>
@@ -67,12 +70,26 @@
                             <field name="objet"/>
                             <field name="version"/>
                         </group>
-                        <group string="Transmission">
+                        <group string="Détails">
+                            <field name="date_creation"/>
+                            <field name="auteur_id"/>
+                            <field name="montant_ttc"/>
                             <field name="transmitted_by"/>
                             <field name="transmission_date"/>
                         </group>
                     </group>
                     <notebook>
+                        <page string="Document">
+                            <group>
+                                <field name="attachment" filename="attachment_name"/>
+                                <field name="attachment_name"/>
+                                <field name="onedrive_url"/>
+                                <field name="generated_filename"/>
+                            </group>
+                        </page>
+                        <page string="Commentaires">
+                            <field name="comment"/>
+                        </page>
                         <page string="Versions liées">
                             <field name="parent_document_id"/>
                             <field name="child_version_ids">
