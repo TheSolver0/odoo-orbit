@@ -8,6 +8,7 @@
             <tree>
                 <field name="name"/>
                 <field name="code"/>
+                <field name="naming_pattern"/>
             </tree>
         </field>
     </record>
@@ -21,6 +22,22 @@
                     <group>
                         <field name="name"/>
                         <field name="code"/>
+                    </group>
+                    <group string="Nommage automatique">
+                        <field name="naming_pattern"
+                               placeholder="ex: FP_{client}_{objet}_v{version}"/>
+                    </group>
+                    <group string="Variables disponibles">
+                        <div colspan="2" class="text-muted">
+                            <ul>
+                                <li><b>{code}</b> → code du type (ex: FP)</li>
+                                <li><b>{client}</b> → nom du client sans espaces</li>
+                                <li><b>{objet}</b> → objet du document sans espaces</li>
+                                <li><b>{version}</b> → numéro de version</li>
+                                <li><b>{num:03d}</b> → numéro séquentiel annuel (ex: 001)</li>
+                                <li><b>{year}</b> → année (ex: 2026)</li>
+                            </ul>
+                        </div>
                     </group>
                 </sheet>
             </form>

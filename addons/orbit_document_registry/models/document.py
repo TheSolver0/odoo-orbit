@@ -112,30 +112,57 @@ class OrbitDocument(models.Model):
 
             year = fields.Date.today().year
 
-            last_document = self.search(
-                [
+            if doc_type.naming_pattern:
+
+                client_name = ""
+                if vals.get("client_id"):
+                    partner = self.env["res.partner"].browse(vals["client_id"])
+                    client_name = (partner.name or "").replace(" ", "")
+
+                objet_clean = (vals.get("objet") or "").replace(" ", "")
+                version = vals.get("version", 1)
+
+                num = self.search_count([
                     ("document_type_id", "=", doc_type.id),
-                    ("name", "like", f"{doc_type.code}-{year}-%")
-                ],
-                order="id desc",
-                limit=1
-            )
+                    ("date_creation", ">=", f"{year}-01-01"),
+                    ("date_creation", "<=", f"{year}-12-31"),
+                ]) + 1
 
-            if last_document:
-
-                last_number = int(
-                    last_document.name.split("-")[-1]
+                vals["name"] = doc_type.naming_pattern.format(
+                    code=doc_type.code,
+                    client=client_name,
+                    objet=objet_clean,
+                    version=version,
+                    num=num,
+                    year=year,
                 )
-
-                sequence = last_number + 1
 
             else:
 
-                sequence = 1
+                last_document = self.search(
+                    [
+                        ("document_type_id", "=", doc_type.id),
+                        ("name", "like", f"{doc_type.code}-{year}-%")
+                    ],
+                    order="id desc",
+                    limit=1
+                )
 
-            vals["name"] = (
-                f"{doc_type.code}-{year}-{sequence:03d}"
-            )
+                if last_document:
+
+                    last_number = int(
+                        last_document.name.split("-")[-1]
+                    )
+
+                    sequence = last_number + 1
+
+                else:
+
+                    sequence = 1
+
+                vals["name"] = (
+                    f"{doc_type.code}-{year}-{sequence:03d}"
+                )
 
         return super().create(vals)
     
