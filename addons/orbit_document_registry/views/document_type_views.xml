@@ -1,34 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="orbit_document_type_tree"
-            model="ir.ui.view">
-        <field name="name">
-            orbit.document.type.tree
-        </field>
-        <field name="model">
-            orbit.document.type
-        </field>
+    <record id="orbit_document_type_tree" model="ir.ui.view">
+        <field name="name">orbit.document.type.tree</field>
+        <field name="model">orbit.document.type</field>
         <field name="arch" type="xml">
-
             <tree>
                 <field name="name"/>
                 <field name="code"/>
             </tree>
-
         </field>
     </record>
 
-    <record id="orbit_document_type_form"
-            model="ir.ui.view">
-        <field name="name">
-            orbit.document.type.form
-        </field>
-        <field name="model">
-            orbit.document.type
-        </field>
+    <record id="orbit_document_type_form" model="ir.ui.view">
+        <field name="name">orbit.document.type.form</field>
+        <field name="model">orbit.document.type</field>
         <field name="arch" type="xml">
-
             <form>
                 <sheet>
                     <group>
@@ -37,25 +24,13 @@
                     </group>
                 </sheet>
             </form>
-
         </field>
     </record>
 
-    <record id="orbit_document_type_action"
-            model="ir.actions.act_window">
-
-        <field name="name">
-            Types de documents
-        </field>
-
-        <field name="res_model">
-            orbit.document.type
-        </field>
-
-        <field name="view_mode">
-            tree,form
-        </field>
-
+    <record id="orbit_document_type_action" model="ir.actions.act_window">
+        <field name="name">Types de documents</field>
+        <field name="res_model">orbit.document.type</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
 </odoo>
