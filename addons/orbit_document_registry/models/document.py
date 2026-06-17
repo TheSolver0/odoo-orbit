@@ -53,6 +53,37 @@ class OrbitDocument(models.Model):
         tracking=True
     )
 
+    date_creation = fields.Date(
+        string="Date de création",
+        default=fields.Date.today
+    )
+
+    auteur_id = fields.Many2one(
+        "res.users",
+        string="Auteur",
+        default=lambda self: self.env.user
+    )
+
+    montant_ttc = fields.Float(
+        string="Montant TTC"
+    )
+
+    attachment = fields.Binary(
+        string="Fichier"
+    )
+
+    attachment_name = fields.Char(
+        string="Nom du fichier"
+    )
+
+    onedrive_url = fields.Char(
+        string="Lien OneDrive"
+    )
+
+    comment = fields.Html(
+        string="Commentaires"
+    )
+
     statut = fields.Selection(
         [
             ("draft", "Brouillon"),
