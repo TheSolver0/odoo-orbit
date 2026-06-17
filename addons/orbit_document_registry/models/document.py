@@ -1,5 +1,4 @@
 from odoo import models, fields, api
-from datetime import datetime
 
 class OrbitDocument(models.Model):
     _name = "orbit.document"
@@ -22,14 +21,22 @@ class OrbitDocument(models.Model):
 
     client_id = fields.Many2one(
         "res.partner",
-        required=True
+        required=True,
+        tracking=True
     )
+
     client_reference = fields.Char(
-    string="Référence Client"
+        string="Référence Client"
     )
 
     project_name = fields.Char(
         string="Projet"
+    )
+
+    version = fields.Integer(
+        string="Version",
+        default=1,
+        copy=False
     )
 
     transmission_date = fields.Datetime(
@@ -47,14 +54,16 @@ class OrbitDocument(models.Model):
     )
 
     statut = fields.Selection(
-        [...],
+        [
+            ("draft", "Brouillon"),
+            ("sent", "Transmis"),
+            ("validated", "Validé"),
+            ("cancelled", "Annulé"),
+        ],
+        default="draft",
         tracking=True
     )
 
-    client_id = fields.Many2one(
-        "res.partner",
-        tracking=True
-    )
     generated_filename = fields.Char(
         string="Nom de fichier",
         compute="_compute_filename",
@@ -137,17 +146,6 @@ class OrbitDocument(models.Model):
             "res_id": new_version.id,
             "view_mode": "form",
         }
-    def action_mark_as_sent(self):
-
-        self.write({
-            "statut": "sent",
-            "transmission_date": fields.Datetime.now(),
-            "transmitted_by": self.env.user.id,
-        })
-
-        self.message_post(
-            body="Document transmis."
-        )
     def action_validate(self):
 
         self.write({
