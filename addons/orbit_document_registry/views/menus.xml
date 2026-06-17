@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="orbit_root_menu"
+        name="Registre ORBIT"
+        sequence="10"/>
+
+    <menuitem
+        id="orbit_documents_menu"
+        name="Documents"
+        parent="orbit_root_menu"
+        action="orbit_document_action"
+        sequence="1"/>
+
+    <menuitem
+        id="orbit_document_types_menu"
+        name="Types de documents"
+        parent="orbit_root_menu"
+        action="orbit_document_type_action"
+        sequence="2"/>
+
+</odoo>

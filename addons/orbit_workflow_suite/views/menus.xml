@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         ACTIONS
+    ═══════════════════════════════════════════════════════════ -->
+
+    <!-- Tableau Daily : Kanban toutes tâches, groupé par étape -->
+    <record id="action_daily_kanban_board" model="ir.actions.act_window">
+        <field name="name">Tableau Daily</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="view_task_kanban_daily_board"/>
+        <field name="context">{'group_by': 'stage_id', 'search_default_my_tasks': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune tâche. Créez une tâche depuis vos projets.
+            </p>
+        </field>
+    </record>
+
+    <!-- Mes tâches du jour -->
+    <record id="action_my_daily_tasks" model="ir.actions.act_window">
+        <field name="name">Mes tâches du jour</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="view_task_kanban_daily_board"/>
+        <field name="domain">[('user_ids', 'in', [uid])]</field>
+        <field name="context">{'group_by': 'stage_id'}</field>
+    </record>
+
+    <!-- Rapport Daily exportable -->
+    <record id="action_daily_report_list" model="ir.actions.act_window">
+        <field name="name">Rapport Daily – Export</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_daily_report_list"/>
+        <field name="context">{'group_by': 'user_ids'}</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MENU PRINCIPAL
+    ═══════════════════════════════════════════════════════════ -->
+    <menuitem
+        id="orbit_workflow_root_menu"
+        name="Orbit Workflow"
+        sequence="10"
+    />
+
+    <menuitem
+        id="orbit_daily_menu"
+        name="Tableau Daily (équipe)"
+        parent="orbit_workflow_root_menu"
+        action="action_daily_kanban_board"
+        sequence="10"
+    />
+
+    <menuitem
+        id="orbit_my_tasks_menu"
+        name="Mes tâches du jour"
+        parent="orbit_workflow_root_menu"
+        action="action_my_daily_tasks"
+        sequence="20"
+    />
+
+    <menuitem
+        id="orbit_report_menu"
+        name="Rapport Daily (Export)"
+        parent="orbit_workflow_root_menu"
+        action="action_daily_report_list"
+        sequence="30"
+    />
+
+</odoo>

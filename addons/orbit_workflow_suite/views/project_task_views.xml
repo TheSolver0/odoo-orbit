@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         VUE KANBAN – Tableau Daily (5 colonnes BPMN)
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_task_kanban_daily_board" model="ir.ui.view">
+        <field name="name">project.task.kanban.daily</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="user_ids"/>
+                <field name="stage_id"/>
+                <field name="project_id"/>
+                <field name="priority"/>
+                <field name="proof_url"/>
+                <field name="proof_attachment_ids"/>
+                <field name="child_ids"/>
+                <field name="tag_ids"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_globally_visible">
+                            <div class="oe_kanban_content">
+
+                                <!-- Titre + priorité -->
+                                <div class="o_kanban_record_top mb4">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <t t-if="record.priority.raw_value === '1'">
+                                        <span class="fa fa-star text-warning" title="Priorité haute"/>
+                                    </t>
+                                </div>
+
+                                <!-- Projet -->
+                                <div class="o_kanban_record_body">
+                                    <t t-if="record.project_id.value">
+                                        <span class="text-muted small">
+                                            <i class="fa fa-folder-o me-1"/>
+                                            <t t-esc="record.project_id.value"/>
+                                        </span>
+                                    </t>
+                                    <field name="tag_ids" widget="many2many_tags"
+                                           options="{'color_field': 'color'}"/>
+                                </div>
+
+                                <!-- Pied de carte -->
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <!-- Compteur sous-tâches -->
+                                        <t t-if="record.child_ids.raw_value and record.child_ids.raw_value.length">
+                                            <span class="badge rounded-pill bg-secondary me-1"
+                                                  title="Sous-tâches">
+                                                <i class="fa fa-tasks me-1"/>
+                                                <t t-esc="record.child_ids.raw_value.length"/>
+                                            </span>
+                                        </t>
+                                        <!-- Indicateur preuve -->
+                                        <t t-if="record.proof_url.raw_value or (record.proof_attachment_ids.raw_value and record.proof_attachment_ids.raw_value.length)">
+                                            <span class="badge rounded-pill bg-success"
+                                                  title="Preuve ajoutée">
+                                                <i class="fa fa-paperclip"/>
+                                            </span>
+                                        </t>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="user_ids"
+                                               widget="many2many_avatar_user"/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- ═══════════════════════════════════════════════════════════
+         VUE FORMULAIRE – Améliorations Orbit sur la fiche tâche
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_task_form_orbit" model="ir.ui.view">
+        <field name="name">project.task.form.orbit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+
+            <!-- Champs calculés requis par les expressions invisible= (Odoo 17) -->
+            <xpath expr="//notebook" position="before">
+                <field name="can_plan_today" invisible="True"/>
+                <field name="can_start_task" invisible="True"/>
+                <field name="can_mark_done" invisible="True"/>
+                <field name="can_postpone" invisible="True"/>
+            </xpath>
+
+            <!-- Boutons workflow dans le header (syntaxe Odoo 17) -->
+            <xpath expr="//header" position="inside">
+                <button name="action_plan_today"
+                        string="Planifier aujourd'hui"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not can_plan_today"/>
+                <button name="action_start_task"
+                        string="Démarrer"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not can_start_task"/>
+                <button name="action_mark_done"
+                        string="✓ Marquer comme Terminé"
+                        type="object"
+                        class="btn-success"
+                        invisible="not can_mark_done"/>
+                <button name="action_postpone"
+                        string="Reporter"
+                        type="object"
+                        class="btn-warning"
+                        invisible="not can_postpone"/>
+            </xpath>
+
+            <!-- Onglet Orbit Workflow -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Orbit Workflow" name="orbit_workflow">
+
+                    <!-- Plan du jour (Stand-up) -->
+                    <group string="Stand-up – Plan du jour">
+                        <field name="standup_comment"
+                               nolabel="1"
+                               colspan="2"
+                               placeholder="Que prévois-tu de faire aujourd'hui sur cette tâche ?"/>
+                        <field name="blocker_comment"
+                               nolabel="1"
+                               colspan="2"
+                               placeholder="Y a-t-il des blockers ou des dépendances ?"/>
+                    </group>
+
+                    <!-- Preuve d'exécution -->
+                    <group string="Preuve d'exécution (obligatoire pour Terminé)">
+                        <field name="proof_url"
+                               placeholder="https://... (lien screenshot, doc, PR...)"/>
+                        <field name="proof_attachment_ids"
+                               widget="many2many_binary"
+                               string="Fichiers joints"/>
+                    </group>
+
+                    <!-- Méta Agile -->
+                    <group string="Agile" col="4">
+                        <field name="sprint_id"/>
+                        <field name="story_points"/>
+                        <field name="task_type"/>
+                        <field name="completion_date"/>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

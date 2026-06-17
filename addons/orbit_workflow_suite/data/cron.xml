@@ -1,0 +1,14 @@
+<odoo>
+
+    <record id="orbit_daily_cron" model="ir.cron">
+        <field name="name">Orbit Daily Processing</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="state">code</field>
+        <field name="code">
+model.process_daily_tasks()
+        </field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+
+</odoo>

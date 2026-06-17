@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="orbit_document_search"
+            model="ir.ui.view">
+
+        <field name="name">
+            orbit.document.search
+        </field>
+
+        <field name="model">
+            orbit.document
+        </field>
+
+        <field name="arch" type="xml">
+
+            <search>
+
+                <field name="name"/>
+
+                <field name="client_id"/>
+
+                <field name="project_name"/>
+
+                <field name="document_type_id"/>
+
+                <filter
+                    string="Brouillons"
+                    name="draft"
+                    domain="[('statut','=','draft')]"/>
+
+                <filter
+                    string="Validés"
+                    name="validated"
+                    domain="[('statut','=','validated')]"/>
+
+                <group expand="0"
+                    string="Grouper par">
+
+                    <filter
+                        string="Client"
+                        context="{'group_by':'client_id'}"/>
+
+                    <filter
+                        string="Type"
+                        context="{'group_by':'document_type_id'}"/>
+
+                    <filter
+                        string="Projet"
+                        context="{'group_by':'project_name'}"/>
+
+                </group>
+
+            </search>
+
+        </field>
+
+    </record>
+
+    <record id="orbit_document_form"
+            model="ir.ui.view">
+
+        <field name="name">
+            orbit.document.form
+        </field>
+
+        <field name="model">
+            orbit.document
+        </field>
+
+        <field name="arch" type="xml">
+
+    <form>
+        <header>
+
+            <button
+                name="action_validate"
+                type="object"
+                string="Valider"
+                class="btn-success"
+                invisible="statut != 'draft'"/>
+
+            <button
+                name="action_mark_as_sent"
+                type="object"
+                string="Transmettre"
+                class="btn-primary"
+                invisible="statut != 'validated'"/>
+
+            <button
+                name="action_cancel"
+                type="object"
+                string="Annuler"
+                class="btn-danger"
+                invisible="statut == 'cancelled'"/>
+
+            <field
+                name="statut"
+                widget="statusbar"
+                statusbar_visible="draft,validated,sent,cancelled"/>
+
+        </header>
+        <sheet>
+
+            <group>
+
+                <group>
+
+                    <field name="name"/>
+
+                    <field name="document_type_id"/>
+
+                    <field name="client_id"/>
+
+                    <field name="client_reference"/>
+
+                    <field name="project_name"/>
+
+                </group>
+
+                <group>
+
+                    <field name="date_creation"/>
+
+                    <field name="auteur_id"/>
+
+                    <field name="statut"/>
+
+                    <field name="montant_ttc"/>
+
+                </group>
+
+            </group>
+
+            <notebook>
+
+                <page string="Document">
+
+                    <field name="attachment"/>
+
+                    <field name="attachment_name"/>
+
+                    <field name="onedrive_url"/>
+
+                </page>
+
+                <page string="Commentaires">
+
+                    <field name="comment"/>
+
+                </page>
+
+            </notebook>
+
+        </sheet>
+
+        <chatter/>
+
+    </form>
+
+        </field>
+
+    </record>
+
+    <record id="orbit_document_action"
+            model="ir.actions.act_window">
+
+        <field name="name">
+            Documents
+        </field>
+
+        <field name="res_model">
+            orbit.document
+        </field>
+
+        <field name="view_mode">
+            tree,form
+        </field>
+
+    </record>
+
+</odoo>

@@ -1,0 +1,47 @@
+<odoo>
+
+    <record id="stage_backlog" model="project.task.type">
+        <field name="name">Backlog</field>
+        <field name="sequence">10</field>
+        <field name="description">Tâches à planifier</field>
+    </record>
+
+    <record id="stage_today" model="project.task.type">
+        <field name="name">Aujourd'hui</field>
+        <field name="sequence">20</field>
+        <field name="description">Tâches planifiées pour aujourd'hui</field>
+    </record>
+
+    <record id="stage_progress" model="project.task.type">
+        <field name="name">En cours</field>
+        <field name="sequence">30</field>
+        <field name="description">Tâches en cours d'exécution</field>
+    </record>
+
+    <record id="stage_review" model="project.task.type">
+        <field name="name">En revue</field>
+        <field name="sequence">40</field>
+        <field name="description">Tâches en attente de revue ou validation</field>
+    </record>
+
+    <record id="stage_done" model="project.task.type">
+        <field name="name">Terminé</field>
+        <field name="sequence">50</field>
+        <field name="description">Tâches terminées (preuves requises)</field>
+    </record>
+
+    <record id="stage_reported" model="project.task.type">
+        <field name="name">Reporté</field>
+        <field name="sequence">60</field>
+        <field name="fold">True</field>
+        <field name="description">Tâches bloquées ou reportées</field>
+    </record>
+
+    <record id="stage_old_done" model="project.task.type">
+        <field name="name">vieux Terminé</field>
+        <field name="sequence">70</field>
+        <field name="fold">True</field>
+        <field name="description">Archive des tâches terminées précédemment</field>
+    </record>
+
+</odoo>

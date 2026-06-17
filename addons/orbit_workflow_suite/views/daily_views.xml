@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         VUE LISTE – Rapport Daily exportable
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_daily_report_list" model="ir.ui.view">
+        <field name="name">project.task.list.daily.report</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <tree string="Rapport Daily" export_xlsx="1">
+                <field name="user_ids" string="Employé" widget="many2many_tags"/>
+                <field name="name" string="Tâche"/>
+                <field name="project_id" string="Projet"/>
+                <field name="stage_id" string="Étape"/>
+                <field name="standup_comment" string="Plan du jour" optional="show"/>
+                <field name="blocker_comment" string="Blockers" optional="show"/>
+                <field name="proof_url" string="Preuve (lien)" optional="show"/>
+                <field name="completion_date" string="Terminé le" optional="show"/>
+                <field name="priority" widget="priority" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
